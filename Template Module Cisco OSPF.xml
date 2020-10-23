@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2020-10-23T11:01:10Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template Module Cisco OSPF</template>
+            <name>Template Module Cisco OSPF</name>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>OSPF</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>OSPF Router Admin Status</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>OSPF-MIB::ospfAdminStat.0</snmp_oid>
+                    <key>ospfAdminStat</key>
+                    <history>30d</history>
+                    <trends>0</trends>
+                    <value_type>LOG</value_type>
+                    <applications>
+                        <application>
+                            <name>OSPF</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=0</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{last(#5)}=1</recovery_expression>
+                            <name>OSPF process is down</name>
+                            <priority>DISASTER</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>OSPF router working as Area border router</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>OSPF-MIB::ospfAreaBdrRtrStatus.0</snmp_oid>
+                    <key>ospfAreaBdrRtrStatus</key>
+                    <delay>5m</delay>
+                    <history>7d</history>
+                    <trends>180d</trends>
+                    <applications>
+                        <application>
+                            <name>OSPF</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>OSPF router working as ASBDR</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>OSPF-MIB::ospfASBdrRtrStatus.0</snmp_oid>
+                    <key>ospfASBdrRtrStatus</key>
+                    <delay>5m</delay>
+                    <applications>
+                        <application>
+                            <name>OSPF</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>OSPF external lsa count</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>OSPF-MIB::ospfExternLsaCount.0</snmp_oid>
+                    <key>ospfExternLsaCount</key>
+                    <delay>1h</delay>
+                    <history>7d</history>
+                    <trends>180d</trends>
+                    <applications>
+                        <application>
+                            <name>OSPF</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>OSPF Router ID</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>1.3.6.1.2.1.14.1.1.0</snmp_oid>
+                    <key>ospfRouterId</key>
+                    <delay>1h</delay>
+                    <history>7d</history>
+                    <trends>180d</trends>
+                    <applications>
+                        <application>
+                            <name>OSPF</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>OSPF version</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>OSPF-MIB::ospfVersionNumber.0</snmp_oid>
+                    <key>ospfVersionNumber</key>
+                    <delay>1h</delay>
+                    <history>7d</history>
+                    <applications>
+                        <application>
+                            <name>OSPF</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{diff()}=1</expression>
+                            <name>OSPF version is changed</name>
+                            <priority>HIGH</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>OSPF Areas</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE}, OSPF-MIB::ospfAreaId]</snmp_oid>
+                    <key>ospfAreaId</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>OSPF LSA area  {#SNMPINDEX} count</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>OSPF-MIB::ospfAreaLsaCount.{#SNMPINDEX}</snmp_oid>
+                            <key>ospfAreaLsaCount[{#SNMPVALUE}]</key>
+                            <delay>15m</delay>
+                            <applications>
+                                <application>
+                                    <name>OSPF</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{diff()}=1</expression>
+                                    <name>LSA count for area {#SNMPVALUE} is changed</name>
+                                    <priority>INFO</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>OSPF Area Status {#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>OSPF-MIB::ospfAreaStatus.{#SNMPINDEX}</snmp_oid>
+                            <key>ospfAreaStatus[{#SNMPVALUE}]</key>
+                            <history>15d</history>
+                            <trends>180d</trends>
+                            <applications>
+                                <application>
+                                    <name>OSPF</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}=0</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}=1</recovery_expression>
+                                    <name>OSPF Area {#SNMPVALUE} is down</name>
+                                    <priority>DISASTER</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>OSPF route summary type area: {#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>OSPF-MIB::ospfAreaSummary.{#SNMPINDEX}</snmp_oid>
+                            <key>ospfAreaSummary[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <applications>
+                                <application>
+                                    <name>OSPF</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{diff()}=1</expression>
+                                    <name>OSPF route summary type is changed</name>
+                                    <priority>AVERAGE</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>OSPF authentication type</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>OSPF-MIB::ospfAuthType.{#SNMPINDEX}</snmp_oid>
+                            <key>ospfAuthType[{#SNMPVALUE}]</key>
+                            <delay>60m</delay>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>OSPF</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>OSPF intra-area route table calculation for area {#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>OSPF-MIB::ospfSpfRuns.{#SNMPINDEX}</snmp_oid>
+                            <key>ospfSpfRuns[{#SNMPVALUE}]</key>
+                            <history>7d</history>
+                            <trends>180d</trends>
+                            <applications>
+                                <application>
+                                    <name>OSPF</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>OSPF Interfaces</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE},OSPF-MIB::ospfIfIpAddress]</snmp_oid>
+                    <key>ospfIfIpAddress</key>
+                    <delay>1h</delay>
+                    <description>Identifies OSPF Interfaces.</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>OSPF Interface Admin Status {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>OSPF-MIB::ospfIfAdminStat.{#SNMPINDEX}</snmp_oid>
+                            <key>ospfIfAdminStat[{#SNMPVALUE}]</key>
+                            <applications>
+                                <application>
+                                    <name>OSPF</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;&gt;1</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last(#5)}=1</recovery_expression>
+                                    <name>OSPF interface is down {#SNMPVALUE}</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>OSPF declared Metric Table</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE}, OSPF-MIB::ospfIfMetricIpAddress]</snmp_oid>
+                    <key>ospfIfMetricIpAddress</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>OSPF route {#SNMPINDEX} origination status</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>OSPF-MIB::ospfIfMetricStatus.{#SNMPINDEX}</snmp_oid>
+                            <key>ospfIfMetricStatus[{#SNMPVALUE}]</key>
+                            <delay>3m</delay>
+                            <history>7d</history>
+                            <trends>180d</trends>
+                            <applications>
+                                <application>
+                                    <name>OSPF</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>OSPF metric declared for route {#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>OSPF-MIB::ospfIfMetricValue.{#SNMPINDEX}</snmp_oid>
+                            <key>ospfIfMetricValue[{#SNMPVALUE}]</key>
+                            <delay>5m</delay>
+                            <history>7d</history>
+                            <trends>180d</trends>
+                            <applications>
+                                <application>
+                                    <name>OSPF</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>OSPF Neighbor</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE},OSPF-MIB::ospfNbrIpAddr]</snmp_oid>
+                    <key>ospfNbrIpAddr</key>
+                    <delay>60m</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>OSPF NBMA Neighbor {#SNMPVALUE} Status</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ospfNbmaNbrStatus.{#SNMPVALUE}.0</snmp_oid>
+                            <key>ospfNbmaNbrStatus[{#SNMPVALUE}]</key>
+                            <history>15d</history>
+                            <trends>180d</trends>
+                            <applications>
+                                <application>
+                                    <name>OSPF</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;&gt;1</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}=1</recovery_expression>
+                                    <name>OSPF NBMA Neighbor Status is down, router id: {#SNMPVALUE}</name>
+                                    <priority>HIGH</priority>
+                                    <manual_close>YES</manual_close>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>OSPF neighbor relationship changes with {#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>OSPF-MIB::ospfNbrEvents.{#SNMPINDEX}</snmp_oid>
+                            <key>ospfNbrEvents[{#SNMPVALUE}]</key>
+                            <history>7d</history>
+                            <trends>180d</trends>
+                            <applications>
+                                <application>
+                                    <name>OSPF</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{diff()}=1</expression>
+                                    <name>OSPF neighbor relationship is changed with  {#SNMPINDEX}</name>
+                                    <priority>HIGH</priority>
+                                    <manual_close>YES</manual_close>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>OSPF Neighbor {#SNMPVALUE} Router ID</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>OSPF-MIB::ospfNbrRtrId.{#SNMPVALUE}.0</snmp_oid>
+                            <key>ospfNbrRtrId[{#SNMPVALUE}]</key>
+                            <delay>15m</delay>
+                            <history>30d</history>
+                            <trends>180d</trends>
+                            <applications>
+                                <application>
+                                    <name>OSPF</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{diff()}=1</expression>
+                                    <name>OSPF Neighbor {#SNMPVALUE} changed router id</name>
+                                    <priority>INFO</priority>
+                                    <manual_close>YES</manual_close>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>OSPF Neighbor {#SNMPINDEX} State</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>OSPF-MIB::ospfNbrState.{#SNMPINDEX}</snmp_oid>
+                            <key>ospfNbrState[{#SNMPVALUE}]</key>
+                            <history>30d</history>
+                            <trends>180d</trends>
+                            <applications>
+                                <application>
+                                    <name>OSPF</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;=7</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last(,5m)}=8</recovery_expression>
+                                    <name>OSPF neighbor is down, router id: {#SNMPVALUE</name>
+                                    <priority>DISASTER</priority>
+                                    <manual_close>YES</manual_close>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+</zabbix_export>
